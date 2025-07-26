@@ -1,0 +1,153 @@
+# YAML Argparse Schema Example
+---
+# Top-level parser configuration
+parser:
+  prog: "myapp"
+  description: "A sample application with subcommands"
+  epilog: "Use 'myapp <command> --help' for command-specific help"
+  
+# Parent arguments (shared across all subcommands)
+parent_arguments:
+  - name: "--config"
+    short: "-c"
+    type: "str"
+    default: "config.yaml"
+    help: "Configuration file path"
+    
+  - name: "--log-level"
+    short: "-l"
+    type: "str"
+    choices: "@logging_levels"  # Built-in resolver for logging levels
+    default: "INFO"
+    help: "Set logging level"
+
+# Direct arguments (for when no subcommands are used)
+arguments:
+  - name: "input_file"
+    type: "str"
+    help: "Input file to process"
+    nargs: "?"
+    
+  - name: "--output"
+    short: "-o"
+    type: "str"
+    help: "Output file path"
+    
+  - name: "--format"
+    type: "str"
+    choices: ["json", "yaml", "xml"]
+    default: "json"
+    help: "Output format"
+
+# Subcommands configuration
+subcommands:
+  title: "Available commands"
+  description: "Choose a command to run"
+  dest: "command"
+  
+  commands:
+    # Database operations
+    db:
+      description: "Database operations"
+      help: "Manage database operations"
+      
+      arguments:
+        - name: "--host"
+          type: "str"
+          default: "localhost"
+          help: "Database host"
+          
+        - name: "--port"
+          type: "int"
+          default: 5432
+          help: "Database port"
+          
+      subcommands:
+        title: "Database commands"
+        dest: "db_action"
+        
+        commands:
+          migrate:
+            description: "Run database migrations"
+            help: "Apply pending database migrations"
+            arguments:
+              - name: "--dry-run"
+                action: "store_true"
+                help: "Show what would be migrated without applying"
+                
+          backup:
+            description: "Create database backup"
+            help: "Create a backup of the database"
+            arguments:
+              - name: "backup_name"
+                type: "str"
+                help: "Name for the backup file"
+              - name: "--compress"
+                action: "store_true"
+                help: "Compress the backup file"
+                
+    # File operations
+    file:
+      description: "File operations"
+      help: "Perform file operations"
+      
+      arguments:
+        - name: "--recursive"
+          short: "-r"
+          action: "store_true"
+          help: "Process files recursively"
+          
+      subcommands:
+        title: "File commands"
+        dest: "file_action"
+        
+        commands:
+          convert:
+            description: "Convert file formats"
+            help: "Convert files between different formats"
+            arguments:
+              - name: "source"
+                type: "str"
+                help: "Source file path"
+              - name: "target"
+                type: "str"
+                help: "Target file path"
+              - name: "--format"
+                type: "str"
+                choices: ["json", "yaml", "toml"]
+                required: true
+                help: "Target format"
+                
+          validate:
+            description: "Validate file syntax"
+            help: "Validate syntax of configuration files"
+            arguments:
+              - name: "files"
+                type: "str"
+                nargs: "+"
+                help: "Files to validate"
+              - name: "--schema"
+                type: "str"
+                help: "Schema file for validation"
+
+# Argument groups (for better help organization)
+argument_groups:
+  - title: "Input Options"
+    description: "Options for input processing"
+    arguments:
+      - "--input-format"
+      - "input_file"
+      
+  - title: "Output Options" 
+    description: "Options for output formatting"
+    arguments:
+      - "--output"
+      - "--format"
+
+# Mutually exclusive groups
+mutually_exclusive:
+  - title: "Operation Mode"
+    required: false
+    arguments:
+      - "--batch"
+      - "--interactive"
