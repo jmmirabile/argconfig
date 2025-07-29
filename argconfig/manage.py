@@ -151,6 +151,55 @@ class ArgConfigManager:
             if nested_subs and 'commands' in nested_subs:
                 self._print_subcommands(nested_subs['commands'], cmd_path, indent + "  ")
     
+    def _validate_parser_path(self, parser_path: str) -> bool:
+        """Validate that a parser path exists in the current configuration.
+        
+        Args:
+            parser_path: The parser path to validate (e.g., 'app', 'app.db', 'app.db.migrate')
+            
+        Returns:
+            True if the parser path is valid, False otherwise
+        """
+        if not self._config_data:
+            return False
+        
+        path_parts = parser_path.split('.')
+        app_name = self._config_data.get('parser', {}).get('prog', 'app')
+        
+        # Check if first part matches app name
+        if len(path_parts) == 0 or path_parts[0] != app_name:
+            return False
+        
+        # If it's just the app name, it's valid (main parser)
+        if len(path_parts) == 1:
+            return True
+        
+        # Check subcommand path exists
+        subcommands = self._config_data.get('subcommands', {})
+        if not subcommands or 'commands' not in subcommands:
+            return False
+        
+        current = subcommands['commands']
+        subcommand_path = path_parts[1:]  # Remove app name
+        
+        for part in subcommand_path:
+            if part not in current:
+                return False
+            
+            # Move to next level if there are more parts
+            if len(subcommand_path) > 1:
+                nested_subs = current[part].get('subcommands', {})
+                if 'commands' not in nested_subs:
+                    return False
+                current = nested_subs['commands']
+            
+            # Remove the part we just processed
+            subcommand_path = subcommand_path[1:]
+            if not subcommand_path:
+                break
+        
+        return True
+    
     def add_argument(self, args):
         """Add argument to specified parser using argparse-style options.
         
@@ -159,6 +208,14 @@ class ArgConfigManager:
         """
         if not self._config_data:
             print("❌ No configuration found. Run 'argconfig-manage setup <app_name>' first.")
+            return
+        
+        # Validate parser path exists
+        if not self._validate_parser_path(args.parser_path):
+            print(f"❌ Error: Parser path '{args.parser_path}' does not exist.")
+            print("\n💡 Here are the available parser paths:")
+            print("=" * 50)
+            self.list_parsers()
             return
         
         # Build argument properties from parsed args
