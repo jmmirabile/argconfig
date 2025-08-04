@@ -1,0 +1,16 @@
+parser:
+  prog: testapp
+  description: testapp - CLI application
+  epilog: Use 'testapp --help' for more information
+parent_arguments:
+- name: --log-level
+  short: -l
+  type: str
+  choices: '@logging_levels'
+  default: INFO
+  help: Set logging level
+arguments:
+- name: --verbose
+  help: Enable verbose output
+  action: store_true
+subcommands: null

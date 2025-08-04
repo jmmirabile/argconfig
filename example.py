@@ -10,7 +10,7 @@ import sys
 import os
 import yaml
 sys.path.insert(0, os.path.dirname(__file__))
-from argconfig import create_parser_from_yaml
+from argparse_yaml import create_parser_from_yaml
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     
     # Create parser from YAML configuration
     try:
-        parser = create_parser_from_yaml('argconfig/data/schema_example.yaml')
+        parser = create_parser_from_yaml('argparse_yaml/data/schema_example.yaml')
     except FileNotFoundError:
         print("Error: schema_example.yaml not found!")
         print("Make sure you're running this from the project root directory.")

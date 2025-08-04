@@ -1,0 +1,17 @@
+parser:
+  prog: webapp
+  description: webapp - CLI application
+  epilog: Use 'webapp --help' for more information
+parent_arguments:
+- name: --log-level
+  short: -l
+  type: str
+  choices: '@logging_levels'
+  default: INFO
+  help: Set logging level
+arguments:
+- name: --port
+  help: Server port
+  type: int
+  default: 8080
+subcommands: null

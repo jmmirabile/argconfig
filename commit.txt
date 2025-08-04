@@ -1,0 +1,17 @@
+Initial release of argconfig
+
+A script to help create Python ArgParse arguments. The user still need to read and understand how Python's argparse module works. There are lots of nuances to Argparse that are not addressed here. But this is a good bootstrap script.
+
+  - Interactive CLI management tool (argconfig-manage)
+  - YAML-based argument parser configuration  
+  - Built-in resolvers for dynamic values
+  - Nested subcommands support
+  - Complete documentation and examples
+  - Cross-platform support (Windows, macOS, Linux)
+
+  Designed by Jeff Mirabile
+  Date: Jul 26, 2025
+
+
+  Co-Authored-By: Claude <noreply@anthropic.com>
+

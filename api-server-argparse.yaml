@@ -1,0 +1,13 @@
+parser:
+  prog: api-server
+  description: api-server - CLI application
+  epilog: Use 'api-server --help' for more information
+parent_arguments:
+- name: --log-level
+  short: -l
+  type: str
+  choices: '@logging_levels'
+  default: INFO
+  help: Set logging level
+arguments: []
+subcommands: null
