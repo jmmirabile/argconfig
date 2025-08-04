@@ -1,8 +1,14 @@
 from setuptools import setup, find_packages
+import sys
+from pathlib import Path
+
+# Add the package directory to Python path to import version
+sys.path.insert(0, str(Path(__file__).parent / "argparse_yaml"))
+from _version import __version__
 
 setup(
     name="argparse-yaml",
-    version="0.1.0",
+    version=__version__,
     description="Create argparse parsers from YAML configuration files",
     author="Jeff Mirabile",
     packages=find_packages(),

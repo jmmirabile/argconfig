@@ -36,6 +36,7 @@ import yaml
 import glob
 from typing import Dict, Any, List, Optional
 from .models import ArgumentConfig, Argument
+from ._version import __version__
 
 
 class ArgparseYamlManager:
@@ -362,6 +363,7 @@ def main():
         prog='argparse-yaml',
         description='Manage argparse-yaml YAML files interactively'
     )
+    parser.add_argument('--version', action='version', version=f'argparse-yaml {__version__}')
     
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     

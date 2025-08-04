@@ -106,6 +106,6 @@ __all__ = [
 ]
 
 # Package metadata
-__version__ = '0.1.0'
+from ._version import __version__
 __author__ = 'Your Name'
 __description__ = 'Create argparse parsers from YAML configuration files'

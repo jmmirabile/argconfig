@@ -76,3 +76,4 @@ Thumbs.db
 argconfig.yaml
 test_*.yaml
 *.log
+/CLAUDE.md

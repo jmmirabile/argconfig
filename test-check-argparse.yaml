@@ -1,0 +1,13 @@
+parser:
+  prog: test-check
+  description: test-check - CLI application
+  epilog: Use 'test-check --help' for more information
+parent_arguments:
+- name: --log-level
+  short: -l
+  type: str
+  choices: '@logging_levels'
+  default: INFO
+  help: Set logging level
+arguments: []
+subcommands: null
