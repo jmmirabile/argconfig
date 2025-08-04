@@ -86,13 +86,18 @@ class ArgumentParser:
         if resolved_choices:
             kwargs['choices'] = resolved_choices
         
-        # Resolve default using resolvers
-        resolved_default = arg.resolve_default()
-        if resolved_default is not None:
-            kwargs['default'] = resolved_default
+        # Resolve default using precedence: env_var > YAML default > None
+        effective_default = arg.get_effective_default()
+        if effective_default is not None:
+            kwargs['default'] = effective_default
         
+        # Handle required flag - if we have an env var providing a value, don't require CLI input
         if arg.required is not None:
-            kwargs['required'] = arg.required
+            # If we have an effective default from env var, the argument is no longer required
+            if effective_default is not None:
+                kwargs['required'] = False
+            else:
+                kwargs['required'] = arg.required
         
         if arg.nargs is not None:
             kwargs['nargs'] = arg.nargs

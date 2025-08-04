@@ -25,6 +25,9 @@ Examples:
     argparse-yaml list-parsers
     argparse-yaml add-argument --parser-path=myapp --arg="--verbose" --action=store_true
     
+    # Add argument with environment variable support
+    argparse-yaml add-argument --parser-path=myapp --arg="--database-url" --type=str --env-var=DATABASE_URL --help-text="Database connection URL"
+    
     # Work with specific config file
     argparse-yaml list-parsers --config=other-app-argparse.yaml
 """
@@ -256,6 +259,8 @@ class ArgparseYamlManager:
             arg_props['const'] = self._convert_value(args.const)
         if args.metavar:
             arg_props['metavar'] = args.metavar
+        if hasattr(args, 'env_var') and getattr(args, 'env_var', None):
+            arg_props['env_var'] = getattr(args, 'env_var')
         
         # Determine target location
         path_parts = args.parser_path.split('.')
@@ -417,6 +422,10 @@ def main():
                            help='Constant value for store_const/append_const actions')
     add_parser.add_argument('--metavar',
                            help='Name for the argument in usage messages')
+    
+    # Environment variable support
+    add_parser.add_argument('--env-var',
+                           help='Environment variable to read value from (e.g., DATABASE_URL)')
     
     args = parser.parse_args()
     

@@ -10,6 +10,7 @@ Quick Start with CLI Tool:
     
     # Add arguments interactively
     argparse-yaml add-argument --parser-path=myapp --arg=--verbose --action=store_true --help-text="Enable verbose output"
+    argparse-yaml add-argument --parser-path=myapp --arg=--database-url --type=str --env-var=DATABASE_URL --help-text="Database connection URL"
     argparse-yaml add-argument --parser-path=myapp.process --arg=--format --choices="json,yaml" --default=json
     
     # View your parser structure
@@ -48,6 +49,7 @@ Features:
     - Nested subcommands with dot notation (app.db.migrate)
     - Argument groups and mutually exclusive groups
     - Built-in resolvers for dynamic values
+    - Environment variable support with precedence: CLI > env vars > YAML > defaults
     - Interactive CLI management tool
     - Full argparse feature support
 """

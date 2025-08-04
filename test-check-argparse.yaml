@@ -9,5 +9,9 @@ parent_arguments:
   choices: '@logging_levels'
   default: INFO
   help: Set logging level
-arguments: []
+arguments:
+- name: --api-key
+  help: API key for authentication
+  type: str
+  env_var: API_KEY
 subcommands: null

@@ -19,6 +19,7 @@ class Argument:
     nargs: Optional[Union[str, int]] = None
     help: Optional[str] = None
     dest: Optional[str] = None
+    env_var: Optional[str] = None
     
     def resolve_choices(self) -> Optional[List[str]]:
         """Resolve choices using built-in resolvers if needed."""
@@ -45,6 +46,66 @@ class Argument:
             return resolver_registry.resolve_default(resolver_name)
         
         return self.default
+    
+    def resolve_env_var(self) -> Any:
+        """Resolve value from environment variable with precedence: env_var > auto-generated > None."""
+        import os
+        
+        # First try explicit env_var
+        if self.env_var:
+            env_value = os.getenv(self.env_var)
+            if env_value is not None:
+                return self._convert_env_value(env_value)
+        
+        # Auto-generate env var name from argument name
+        if self.name:
+            env_name = self._generate_env_var_name(self.name)
+            env_value = os.getenv(env_name)
+            if env_value is not None:
+                return self._convert_env_value(env_value)
+        
+        return None
+    
+    def _generate_env_var_name(self, arg_name: str) -> str:
+        """Generate environment variable name from argument name."""
+        # Remove leading dashes and convert to uppercase with underscores
+        env_name = arg_name.lstrip('-').upper().replace('-', '_')
+        return env_name
+    
+    def _convert_env_value(self, env_value: str) -> Any:
+        """Convert environment variable string to appropriate type."""
+        if not env_value:
+            return env_value
+        
+        # Handle boolean actions
+        if self.action in ('store_true', 'store_false'):
+            return env_value.lower() in ('true', '1', 'yes', 'on')
+        
+        # Handle type conversion
+        if self.type == 'int':
+            try:
+                return int(env_value)
+            except ValueError:
+                return env_value
+        elif self.type == 'float':
+            try:
+                return float(env_value)
+            except ValueError:
+                return env_value
+        elif self.type == 'bool':
+            return env_value.lower() in ('true', '1', 'yes', 'on')
+        
+        return env_value
+    
+    def get_effective_default(self) -> Any:
+        """Get the effective default value following precedence: env_var > YAML default > None."""
+        # Try environment variable first
+        env_value = self.resolve_env_var()
+        if env_value is not None:
+            return env_value
+        
+        # Fall back to YAML default
+        return self.resolve_default()
 
 
 @dataclass
@@ -130,7 +191,7 @@ class ArgumentConfig:
             ]
         
         # Parse subcommands
-        if 'subcommands' in data:
+        if 'subcommands' in data and data['subcommands'] is not None:
             config.subcommands = cls._parse_subcommands(data['subcommands'])
         
         # Parse argument groups
@@ -170,7 +231,8 @@ class ArgumentConfig:
             required=arg_data.get('required'),
             nargs=arg_data.get('nargs'),
             help=arg_data.get('help'),
-            dest=arg_data.get('dest')
+            dest=arg_data.get('dest'),
+            env_var=arg_data.get('env_var')
         )
     
     @staticmethod

@@ -1,0 +1,29 @@
+parser:
+  prog: test-env
+  description: test-env - CLI application with environment variable support
+  epilog: Use 'test-env --help' for more information
+
+parent_arguments:
+- name: --log-level
+  short: -l
+  type: str
+  choices: '@logging_levels'
+  default: INFO
+  help: Set logging level
+
+arguments:
+- name: --database-url
+  type: str
+  env_var: DATABASE_URL
+  help: Database connection URL
+  required: true
+- name: --verbose
+  short: -v
+  action: store_true
+  help: Enable verbose output
+- name: --port
+  type: int
+  default: 8080
+  help: Server port (uses PORT env var automatically)
+  
+subcommands: null
