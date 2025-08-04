@@ -1,7 +1,7 @@
-# Argconfig
+# Argparse-YAML
 
-[![PyPI version](https://badge.fury.io/py/argconfig.svg)](https://badge.fury.io/py/argconfig)
-[![Python versions](https://img.shields.io/pypi/pyversions/argconfig.svg)](https://pypi.org/project/argconfig/)
+[![PyPI version](https://badge.fury.io/py/argparse-yaml.svg)](https://badge.fury.io/py/argparse-yaml)
+[![Python versions](https://img.shields.io/pypi/pyversions/argparse-yaml.svg)](https://pypi.org/project/argparse-yaml/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Create powerful command-line interfaces using YAML configuration files instead of writing repetitive argparse code.
@@ -9,6 +9,7 @@ Create powerful command-line interfaces using YAML configuration files instead o
 ## ✨ Features
 
 - 🚀 **Interactive CLI Management** - Build CLIs with simple commands
+- 🔍 **Smart Config Detection** - Auto-detects `{app}-argparse.yaml` files
 - 📄 **YAML Configuration** - Define complex argument structures in YAML
 - 🔧 **Built-in Resolvers** - Dynamic values like `@logging_levels`
 - 🌳 **Nested Subcommands** - Multi-level command hierarchies  
@@ -21,47 +22,68 @@ Create powerful command-line interfaces using YAML configuration files instead o
 ### Installation
 
 ```bash
-pip install argconfig
+pip install argparse-yaml
 ```
 
 ### Create Your First CLI
 
 ```bash
-# Create a new CLI configuration
-argconfig-manage setup myapp
+# Create a new CLI configuration - creates myapp-argparse.yaml
+argparse-yaml setup myapp
 
-# Add arguments
-argconfig-manage add-argument \
+# Add arguments (auto-detects myapp-argparse.yaml)
+argparse-yaml add-argument \
   --parser-path=myapp \
   --arg="--verbose" \
   --action=store_true \
   --help-text="Enable verbose output"
 
-argconfig-manage add-argument \
+argparse-yaml add-argument \
   --parser-path=myapp \
   --arg="input_file" \
   --type=str \
   --help-text="Input file to process"
 
-# Add subcommand
-argconfig-manage add-argument \
+# Add subcommand (still auto-detects)
+argparse-yaml add-argument \
   --parser-path=myapp.process \
   --arg="--format" \
   --choices="json,yaml,xml" \
   --default="json" \
   --help-text="Output format"
 
-# View your CLI structure
-argconfig-manage list-parsers
+# View your CLI structure (auto-detects)
+argparse-yaml list-parsers
 ```
+
+### 🔍 Smart Config File Detection
+
+Argparse-YAML automatically detects your config files:
+
+```bash
+# Creates webapp-argparse.yaml and makes it the default
+argparse-yaml setup webapp
+
+# Now uses webapp-argparse.yaml automatically  
+argparse-yaml list-parsers
+
+# But you can still work with other configs explicitly
+argparse-yaml list-parsers --config=myapp-argparse.yaml
+```
+
+**Auto-detection rules:**
+- Looks for `*-argparse.yaml` files in current directory
+- Uses the most recently modified file if multiple exist
+- Falls back to `argparse-yaml.yaml` if none found
+- Override with `--config=filename.yaml` anytime
 
 ### Use in Python
 
 ```python
-from argconfig import create_parser_from_yaml
+from argparse_yaml import create_parser_from_yaml
 
 # Load your CLI configuration
-parser = create_parser_from_yaml('argconfig.yaml')
+parser = create_parser_from_yaml('argparse-yaml.yaml')
 args = parser.parse_args()
 
 # Use the parsed arguments
@@ -79,7 +101,7 @@ myapp --verbose input.txt process --format yaml
 ## 📖 Documentation
 
 - **[Installation Guide](docs/installation.md)** - Getting started with argconfig
-- **[CLI Reference](docs/cli-reference.md)** - Complete argconfig-manage reference
+- **[CLI Reference](docs/cli-reference.md)** - Complete argparse-yaml reference
 - **[Python API](docs/python-api.md)** - Using argconfig in Python code
 - **[Examples](docs/examples.md)** - Real-world CLI examples
 
@@ -111,19 +133,19 @@ validate_parser.add_argument('--schema', help='Schema file')
 
 ```bash
 # One-time setup
-argconfig-manage setup myapp
-argconfig-manage add-argument --parser-path=myapp --arg="--verbose" --action=store_true --help-text="Enable verbose output"
-argconfig-manage add-argument --parser-path=myapp --arg="--log-level" --choices="@logging_levels" --default="INFO" --help-text="Set logging level"
-argconfig-manage add-argument --parser-path=myapp --arg="input_file" --help-text="Input file to process"
-argconfig-manage add-argument --parser-path=myapp.process --arg="--format" --choices="json,yaml,xml" --default="json" --help-text="Output format"
-argconfig-manage add-argument --parser-path=myapp.validate --arg="--schema" --help-text="Schema file"
+argparse-yaml setup myapp
+argparse-yaml add-argument --parser-path=myapp --arg="--verbose" --action=store_true --help-text="Enable verbose output"
+argparse-yaml add-argument --parser-path=myapp --arg="--log-level" --choices="@logging_levels" --default="INFO" --help-text="Set logging level"
+argparse-yaml add-argument --parser-path=myapp --arg="input_file" --help-text="Input file to process"
+argparse-yaml add-argument --parser-path=myapp.process --arg="--format" --choices="json,yaml,xml" --default="json" --help-text="Output format"
+argparse-yaml add-argument --parser-path=myapp.validate --arg="--schema" --help-text="Schema file"
 ```
 
 ```python
 # Clean Python code
-from argconfig import create_parser_from_yaml
+from argparse_yaml import create_parser_from_yaml
 
-parser = create_parser_from_yaml('argconfig.yaml')
+parser = create_parser_from_yaml('argparse-yaml.yaml')
 args = parser.parse_args()
 ```
 
@@ -155,9 +177,9 @@ arguments:
 ### Simple File Processor
 
 ```bash
-argconfig-manage setup fileproc
-argconfig-manage add-argument --parser-path=fileproc --arg="input_file" --type=str --help-text="Input file"
-argconfig-manage add-argument --parser-path=fileproc.convert --arg="--format" --choices="json,yaml,xml" --default="json"
+argparse-yaml setup fileproc
+argparse-yaml add-argument --parser-path=fileproc --arg="input_file" --type=str --help-text="Input file"
+argparse-yaml add-argument --parser-path=fileproc.convert --arg="--format" --choices="json,yaml,xml" --default="json"
 ```
 
 **Result:**
@@ -168,10 +190,10 @@ fileproc input.txt convert --format yaml
 ### Database Tool
 
 ```bash
-argconfig-manage setup dbtool
-argconfig-manage add-argument --parser-path=dbtool --arg="--host" --default="localhost" --help-text="Database host"
-argconfig-manage add-argument --parser-path=dbtool.migrate --arg="--dry-run" --action=store_true --help-text="Dry run mode"
-argconfig-manage add-argument --parser-path=dbtool.backup --arg="backup_name" --help-text="Backup name"
+argparse-yaml setup dbtool
+argparse-yaml add-argument --parser-path=dbtool --arg="--host" --default="localhost" --help-text="Database host"
+argparse-yaml add-argument --parser-path=dbtool.migrate --arg="--dry-run" --action=store_true --help-text="Dry run mode"
+argparse-yaml add-argument --parser-path=dbtool.backup --arg="backup_name" --help-text="Backup name"
 ```
 
 **Result:**
@@ -218,8 +240,8 @@ subcommands:              # Nested command structure
 
 ```bash
 # Create multi-level commands
-argconfig-manage add-argument --parser-path=myapp.db.migrate.up --arg="--steps" --type=int
-argconfig-manage add-argument --parser-path=myapp.db.migrate.down --arg="--steps" --type=int
+argparse-yaml add-argument --parser-path=myapp.db.migrate.up --arg="--steps" --type=int
+argparse-yaml add-argument --parser-path=myapp.db.migrate.down --arg="--steps" --type=int
 
 # Results in: myapp db migrate up --steps 5
 ```

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="argconfig",
+    name="argparse-yaml",
     version="0.1.0",
     description="Create argparse parsers from YAML configuration files",
     author="Jeff Mirabile",
@@ -12,7 +12,7 @@ setup(
     python_requires=">=3.7",
     entry_points={
         'console_scripts': [
-            'argconfig-manage=argconfig.manage:main',
+            'argparse-yaml=argparse_yaml.main:main',
         ],
     },
     classifiers=[

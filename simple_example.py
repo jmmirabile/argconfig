@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 
-from argconfig import create_parser_from_dict
+from argparse_yaml import create_parser_from_dict
 
 
 def main():

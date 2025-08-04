@@ -1,0 +1,16 @@
+parser:
+  prog: myapp
+  description: myapp - CLI application
+  epilog: Use 'myapp --help' for more information
+parent_arguments:
+- name: --log-level
+  short: -l
+  type: str
+  choices: '@logging_levels'
+  default: INFO
+  help: Set logging level
+arguments:
+- name: --debug
+  help: Enable debug mode
+  action: store_true
+subcommands: null
